@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NourishAI — Smart Meal Planner</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet — all visual styling lives in styles.css -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════
+     TOAST NOTIFICATION
+     Shown briefly for success / error feedback messages.
+     Controlled via showToast() in app.js
+════════════════════════════════════════════════════════ -->
+<div id="toast"></div>
+
+
+<!-- ════════════════════════════════════════════════════════
+     MAIN APP WRAPPER
+════════════════════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- ── HEADER ──────────────────────────────────────────── -->
+  <div id="header">
+    <div class="header-row">
+
+      <!-- Logo -->
+      <div class="logo-icon">🍽️</div>
+      <div>
+        <div class="logo-title">NourishAI</div>
+        <div class="logo-sub">Smart Meal Planner</div>
+      </div>
+
+      <!-- Live preference tags (updated by app.js) -->
+      <div class="header-tags">
+        <span class="tag" id="tag-diet">Any Diet</span>
+        <span class="tag" id="tag-goal">Weight Loss</span>
+      </div>
+
+    </div><!-- /header-row -->
+
+    <!-- ── NAVIGATION TABS ────────────────────────────── -->
+    <div class="tabs">
+      <button class="tab active" data-tab="plan">
+        <span class="icon">📅</span>Meal Plan
+      </button>
+      <button class="tab" data-tab="recipes">
+        <span class="icon">👨‍🍳</span>Recipes
+      </button>
+      <button class="tab" data-tab="nutrition">
+        <span class="icon">📊</span>Nutrition
+      </button>
+      <button class="tab" data-tab="grocery">
+        <span class="icon">🛒</span>Grocery
+      </button>
+    </div>
+
+  </div><!-- /header -->
+
+
+  <!-- ── CONTENT AREA ────────────────────────────────────── -->
+  <div id="content">
+
+    <!-- ══════════════════════════════════════════════════
+         USER PROFILE CARD
+         Always visible at the top of every tab.
+         Controls diet type, health goal, and calorie target.
+    ══════════════════════════════════════════════════════ -->
+    <div class="card">
+      <div class="section-label">Your Profile</div>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label class="form-label">Diet Type</label>
+          <select id="sel-diet">
+            <option>None</option>
+            <option>Vegetarian</option>
+            <option>Vegan</option>
+            <option>Keto</option>
+            <option>Paleo</option>
+            <option>Gluten-Free</option>
+            <option>Dairy-Free</option>
+            <option>Mediterranean</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Health Goal</label>
+          <select id="sel-goal">
+            <option>Weight Loss</option>
+            <option>Muscle Gain</option>
+            <option>Maintenance</option>
+            <option>Heart Health</option>
+            <option>Energy Boost</option>
+            <option>Better Sleep</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label">
+            Daily Calories: <span class="calorie-val" id="calorie-display">2000 kcal</span>
+          </label>
+          <input type="range" id="calorie-slider" min="1200" max="3500" step="50" value="2000" />
+          <div class="range-labels">
+            <span>1200</span>
+            <span>3500</span>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /profile card -->
+
+
+    <!-- ══════════════════════════════════════════════════
+         PANEL 1 — MEAL PLAN
+         Generates and displays a 7-day meal plan.
+    ══════════════════════════════════════════════════════ -->
+    <div class="panel active" id="panel-plan">
+
+      <button class="btn" id="btn-generate-plan">✨ Generate Weekly Plan</button>
+
+      <!-- Loading spinner (hidden until request is in flight) -->
+      <div class="spinner" id="spinner-plan" style="display:none;">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <!-- Output (hidden until plan is generated) -->
+      <div id="meal-plan-output" style="display:none; margin-top:16px;">
+        <div class="day-row" id="day-selector"></div>  <!-- Populated by app.js -->
+        <div class="meal-list" id="meal-list"></div>   <!-- Populated by app.js -->
+      </div>
+
+      <!-- Empty state (shown before first generation) -->
+      <div class="empty" id="plan-empty">
+        <div class="empty-icon">🌿</div>
+        <div class="empty-title">Your plan awaits</div>
+        <div class="empty-body">
+          Set your preferences above and generate a personalised weekly meal plan powered by AI.
+        </div>
+      </div>
+
+    </div><!-- /panel-plan -->
+
+
+    <!-- ══════════════════════════════════════════════════
+         PANEL 2 — RECIPES
+         Suggests a recipe based on available ingredients.
+    ══════════════════════════════════════════════════════ -->
+    <div class="panel" id="panel-recipes">
+
+      <div class="card">
+        <div class="section-label">Available Ingredients</div>
+        <textarea
+          id="ingredients-input"
+          rows="3"
+          placeholder="e.g. chicken breast, broccoli, olive oil, garlic, lemon..."
+        ></textarea>
+      </div>
+
+      <button class="btn" id="btn-generate-recipe">👨‍🍳 Generate Recipe</button>
+
+      <div class="spinner" id="spinner-recipe" style="display:none;">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <!-- Recipe output -->
+      <div class="card" id="recipe-output" style="display:none; margin-top:14px;">
+        <div class="section-label">Your Recipe</div>
+        <div class="prose" id="recipe-text"></div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty" id="recipe-empty">
+        <div class="empty-icon">🥘</div>
+        <div class="empty-title">What's in your kitchen?</div>
+        <div class="empty-body">
+          Enter your available ingredients and AI will craft a delicious, tailored recipe for you.
+        </div>
+      </div>
+
+    </div><!-- /panel-recipes -->
+
+
+    <!-- ══════════════════════════════════════════════════
+         PANEL 3 — NUTRITION ANALYSIS
+         Analyses calorie and macro breakdown for a chosen day.
+    ══════════════════════════════════════════════════════ -->
+    <div class="panel" id="panel-nutrition">
+
+      <!-- Shown when no meal plan exists yet -->
+      <div id="nutrition-needs-plan" class="empty">
+        <div class="empty-icon">📊</div>
+        <div class="empty-title">No plan yet</div>
+        <div class="empty-body">
+          Generate a meal plan first, then come back to analyse your daily nutrition.
+        </div>
+        <button class="btn btn-sm" onclick="switchTab('plan')">Go to Meal Plan →</button>
+      </div>
+
+      <!-- Shown once a meal plan is available -->
+      <div id="nutrition-ready" style="display:none;">
+
+        <div class="section-label" style="margin-bottom:8px;">Analyse Day</div>
+        <div class="day-row" id="nutrition-day-selector"></div> <!-- Populated by app.js -->
+
+        <div class="card" id="nutrition-meals-card">
+          <div class="section-label">
+            Meals for <span id="nutrition-day-label">Mon</span>
+          </div>
+          <div id="nutrition-meals-list"></div> <!-- Populated by app.js -->
+        </div>
+
+        <button class="btn" id="btn-analyse">📊 Analyse Nutrition</button>
+
+        <div class="spinner" id="spinner-nutrition" style="display:none;">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
+        <div class="card" id="nutrition-output" style="display:none; margin-top:14px;">
+          <div class="section-label">Nutrition Breakdown</div>
+          <div class="prose" id="nutrition-text"></div>
+        </div>
+
+      </div><!-- /nutrition-ready -->
+
+    </div><!-- /panel-nutrition -->
+
+
+    <!-- ══════════════════════════════════════════════════
+         PANEL 4 — GROCERY LIST
+         Generates a full categorised shopping list
+         from all 7 days of the meal plan.
+    ══════════════════════════════════════════════════════ -->
+    <div class="panel" id="panel-grocery">
+
+      <!-- Shown when no meal plan exists yet -->
+      <div id="grocery-needs-plan" class="empty">
+        <div class="empty-icon">🛒</div>
+        <div class="empty-title">No ingredients yet</div>
+        <div class="empty-body">
+          Generate your meal plan first to get a smart, categorised grocery list.
+        </div>
+        <button class="btn btn-sm" onclick="switchTab('plan')">Go to Meal Plan →</button>
+      </div>
+
+      <!-- Shown once a meal plan is available -->
+      <div id="grocery-ready" style="display:none;">
+
+        <div class="card card-alt" style="margin-bottom:14px;">
+          <div style="font-family:var(--font-head); font-size:15px; color:var(--accent); margin-bottom:6px;">
+            Ready to shop?
+          </div>
+          <div id="grocery-desc" style="font-size:13px; color:var(--text-dim); line-height:1.6;">
+            We'll build a complete, categorised grocery list from your entire week's meal plan.
+          </div>
+        </div>
+
+        <button class="btn" id="btn-grocery">🛒 Generate Grocery List</button>
+
+        <div class="spinner" id="spinner-grocery" style="display:none;">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
+        <div class="card" id="grocery-output" style="display:none; margin-top:14px;">
+          <div class="grocery-header">
+            <div class="section-label" style="margin:0;">Shopping List</div>
+            <button class="btn btn-sm btn-outline" id="btn-copy-grocery">📋 Copy</button>
+          </div>
+          <div class="prose" id="grocery-text"></div>
+        </div>
+
+      </div><!-- /grocery-ready -->
+
+    </div><!-- /panel-grocery -->
+
+  </div><!-- /content -->
+
+</div><!-- /app -->
+
+
+<!-- ════════════════════════════════════════════════════════
+     FOOTER — fixed at the bottom of the screen
+     Shows the user's current settings at a glance.
+════════════════════════════════════════════════════════ -->
+<div id="footer">
+  <span class="footer-text">Powered by</span>
+  <span class="footer-brand">Claude AI</span>
+  <span class="footer-dot"></span>
+  <span id="footer-status">2000 kcal · None · Weight Loss</span>
+</div>
+
+
+<!-- JavaScript — all logic lives in app.js -->
+<!-- Loaded at the bottom so the DOM is ready when the script runs -->
+<script src="app.js"></script>
+
+</body>
+</html>
