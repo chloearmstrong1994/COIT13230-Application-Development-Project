@@ -1,0 +1,546 @@
+/* ============================================================
+   NourishAI — styles.css
+   Smart Meal Planner Stylesheet
+   ============================================================ */
+
+/* ─── GOOGLE FONTS ─────────────────────────────────────────
+   These are loaded via <link> in index.html.
+   Playfair Display → headings & brand
+   Lato             → body text & UI
+─────────────────────────────────────────────────────────── */
+
+/* ─── CSS VARIABLES ────────────────────────────────────────
+   Change colours here to retheme the entire app.
+─────────────────────────────────────────────────────────── */
+:root {
+  --bg:           #1A0F0A;   /* Main background */
+  --bg-deep:      #0D0602;   /* Deepest background (header, footer) */
+  --bg-card:      #2A1A10;   /* Card surfaces */
+  --bg-card2:     #341F12;   /* Elevated card surfaces */
+  --border:       #3D2414;   /* Default borders */
+  --border-light: #4A2C18;   /* Lighter borders on cards */
+  --accent:       #E8A87C;   /* Primary accent — warm amber */
+  --accent-dark:  #C8703E;   /* Darker accent for gradients */
+  --text:         #F5ECD7;   /* Primary text */
+  --text-muted:   #C8A880;   /* Secondary text */
+  --text-dim:     #8A6A50;   /* Tertiary / labels */
+  --text-faint:   #5A3A28;   /* Disabled / footer text */
+  --shadow:       rgba(0, 0, 0, 0.5);
+  --font-head:    'Playfair Display', Georgia, serif;
+  --font-body:    'Lato', sans-serif;
+}
+
+/* ─── RESET ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── CUSTOM SCROLLBAR ──────────────────────────────────── */
+::-webkit-scrollbar        { width: 4px; }
+::-webkit-scrollbar-track  { background: var(--bg); }
+::-webkit-scrollbar-thumb  { background: var(--border); border-radius: 2px; }
+
+/* ─── ANIMATIONS ────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(80px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+/* ─── LAYOUT ─────────────────────────────────────────────── */
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  padding-bottom: 90px; /* Space above fixed footer */
+}
+
+/* ─── HEADER ─────────────────────────────────────────────── */
+#header {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg) 100%);
+  border-bottom: 1px solid #2A1510;
+  padding: 20px 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.logo-icon {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.logo-title {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+
+.logo-sub {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.header-tags {
+  margin-left: auto;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+/* ─── TAG PILLS ─────────────────────────────────────────── */
+.tag {
+  display: inline-block;
+  background: rgba(232, 168, 124, 0.12);
+  border: 1px solid rgba(232, 168, 124, 0.28);
+  color: var(--accent);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* ─── TABS ───────────────────────────────────────────────── */
+.tabs {
+  display: flex;
+  gap: 3px;
+  margin-top: 16px;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 4px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.tab span.icon {
+  font-size: 18px;
+}
+
+.tab:hover {
+  color: var(--accent);
+  border-color: var(--border-light);
+}
+
+.tab.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: var(--bg-deep);
+  border-color: transparent;
+}
+
+/* ─── CONTENT PANELS ────────────────────────────────────── */
+#content {
+  padding: 20px 16px;
+}
+
+.panel {
+  display: none;
+  animation: fadeUp 0.35s ease;
+}
+
+.panel.active {
+  display: block;
+}
+
+/* ─── CARDS ──────────────────────────────────────────────── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
+}
+
+.card-alt {
+  background: #1E120A;
+}
+
+/* ─── SECTION LABEL ─────────────────────────────────────── */
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+/* ─── FORM ELEMENTS ─────────────────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group.full {
+  grid-column: span 2;
+}
+
+.form-label {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+
+input,
+select,
+textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+
+select {
+  cursor: pointer;
+}
+
+textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+
+input[type="range"] {
+  padding: 0;
+  border: none;
+  background: transparent;
+  accent-color: var(--accent);
+  cursor: pointer;
+  height: 20px;
+}
+
+.range-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
+.calorie-val {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ─── BUTTONS ────────────────────────────────────────────── */
+.btn {
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: var(--bg-deep);
+  border: none;
+  border-radius: 30px;
+  padding: 13px 28px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(232, 168, 124, 0.28);
+  width: 100%;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(232, 168, 124, 0.45);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Small button variant */
+.btn-sm {
+  width: auto;
+  padding: 7px 16px;
+  font-size: 11px;
+  border-radius: 20px;
+}
+
+/* Outline button variant */
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  box-shadow: none;
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: rgba(232, 168, 124, 0.1);
+}
+
+/* ─── DAY SELECTOR BUTTONS ──────────────────────────────── */
+.day-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.day-btn {
+  border-radius: 10px;
+  padding: 7px 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.day-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.day-btn.active {
+  background: rgba(232, 168, 124, 0.14);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ─── MEAL CARDS ─────────────────────────────────────────── */
+.meal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.meal-item {
+  background: var(--bg-card2);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 12px 14px;
+  animation: slideIn 0.3s ease both;
+  transition: transform 0.15s;
+}
+
+.meal-item:hover {
+  transform: translateX(4px);
+}
+
+.meal-item-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.meal-item-name {
+  font-family: var(--font-head);
+  font-size: 16px;
+  color: #F0DFC0;
+  line-height: 1.3;
+}
+
+/* ─── LOADING SPINNER ────────────────────────────────────── */
+.spinner {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: bounce 1s ease-in-out infinite;
+}
+
+.dot:nth-child(2) { animation-delay: 0.15s; }
+.dot:nth-child(3) { animation-delay: 0.30s; }
+
+/* ─── AI TEXT OUTPUT ─────────────────────────────────────── */
+.prose {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+  font-family: var(--font-body);
+}
+
+/* ─── EMPTY STATES ───────────────────────────────────────── */
+.empty {
+  text-align: center;
+  padding: 44px 24px;
+  color: var(--text-faint);
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-title {
+  font-family: var(--font-head);
+  font-size: 18px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.empty-body {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* ─── GROCERY HEADER ─────────────────────────────────────── */
+.grocery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+/* ─── TOAST NOTIFICATION ─────────────────────────────────── */
+#toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 999;
+  background: var(--bg-card);
+  border: 1px solid rgba(232, 168, 124, 0.4);
+  border-radius: 12px;
+  padding: 12px 18px;
+  font-size: 13px;
+  color: var(--text);
+  box-shadow: 0 8px 30px var(--shadow);
+  animation: toastIn 0.3s ease;
+  pointer-events: none;
+  display: none;
+}
+
+#toast.show {
+  display: block;
+}
+
+/* ─── FOOTER / BOTTOM BAR ────────────────────────────────── */
+#footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-deep);
+  border-top: 1px solid #2A1510;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-text {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.footer-brand {
+  font-family: var(--font-head);
+  font-size: 12px;
+  color: var(--text-faint);
+  letter-spacing: 1px;
+}
+
+.footer-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+#footer-status {
+  font-size: 10px;
+  color: var(--text-faint);
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 360px) {
+  .form-grid          { grid-template-columns: 1fr; }
+  .form-group.full    { grid-column: span 1; }
+}
